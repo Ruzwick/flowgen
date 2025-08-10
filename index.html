@@ -348,5 +348,31 @@ window.onload = () => {
   initGoogleSignIn();
 };
 </script>
+<!-- ✅ Add Firebase SDK + Firestore before your main script -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAYYq3uWBzUfuVX5H6dzadmRzqRrvNk-3o",
+  authDomain: "glasstask-f4a65.firebaseapp.com",
+  projectId: "glasstask-f4a65",
+  storageBucket: "glasstask-f4a65.firebasestorage.app",
+  messagingSenderId: "512175308976",
+  appId: "1:512175308976:web:0d1710528a983cd4133b75",
+  measurementId: "G-EB1T4LSXG4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// You can now call db from your main JS
+</script>
+
+<!-- Your existing app JavaScript -->
+<script>
+  // your existing code from const CLIENT_ID = "...";
+</script>
 </body>
 </html>
+
