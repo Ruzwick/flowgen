@@ -174,6 +174,10 @@
 <div class="container">
   <div class="google-btn" id="signinDiv"></div>
 
+  <div class="google-btn">
+    <button id="popupSignInBtn" type="button">Sign in with Google</button>
+  </div>
+
   <div id="userInfo" class="hidden">
     <p id="userName"></p>
     <button onclick="signOut()" style="margin-bottom: 15px; width: 100%;">Sign Out</button>
@@ -215,8 +219,9 @@ const CLIENT_ID = "194031744110-h8d10t8t4jh4dl96psj9hgclujmn0ob9.apps.googleuser
 function handleCredentialResponse(response) {
   const credential = firebase.auth.GoogleAuthProvider.credential(response.credential);
   auth.signInWithCredential(credential).catch((e) => {
-    alert("Sign-in failed.");
     console.error(e);
+    // Fallback to Firebase popup sign-in if One Tap fails
+    signInWithGooglePopup();
   });
 }
 
@@ -238,10 +243,14 @@ function initApp() {
       document.getElementById("signinDiv").classList.add("hidden");
       document.getElementById("userInfo").classList.remove("hidden");
       document.getElementById("userName").textContent = `Hello, ${user.displayName || "User"}`;
+      const popupBtn = document.getElementById("popupSignInBtn");
+      if (popupBtn) popupBtn.classList.add("hidden");
       subscribeTasks(user.uid);
     } else {
       document.getElementById("signinDiv").classList.remove("hidden");
       document.getElementById("userInfo").classList.add("hidden");
+      const popupBtn = document.getElementById("popupSignInBtn");
+      if (popupBtn) popupBtn.classList.remove("hidden");
       if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
       currentTasks = [];
       renderTasks(currentTasks);
@@ -339,7 +348,18 @@ function setTaskCompleted(index, completed) {
 window.onload = () => {
   initApp();
   initGoogleSignIn();
+  const popupBtn = document.getElementById("popupSignInBtn");
+  if (popupBtn) popupBtn.onclick = signInWithGooglePopup;
 };
+
+function signInWithGooglePopup() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  auth.signInWithPopup(provider).catch((e) => {
+    alert("Popup sign-in failed.");
+    console.error(e);
+  });
+}
 </script>
 </body>
 </html>
